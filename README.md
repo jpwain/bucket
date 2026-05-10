@@ -2,6 +2,8 @@
 
 `bucket` is a terminal tool for reviewing two text files side by side and moving lines between them.
 
+![Screenshot](./screenshot.png)
+
 Usage:
 
 ```bash
