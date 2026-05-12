@@ -200,16 +200,22 @@ func (m model) renderStatus() string {
 }
 
 func (m model) renderPanels() string {
-	w := m.width / 2
-	if w < 20 {
-		w = 20
+	// Width() is measured before the border is drawn, but padding is already
+	// accounted for inside the rendered block. Reserve only the outer borders.
+	leftW := (m.width - 4) / 2
+	rightW := m.width - 4 - leftW
+	if leftW < 1 {
+		leftW = 1
+	}
+	if rightW < 1 {
+		rightW = 1
 	}
 	h := m.height - 4
 	if h < 8 {
 		h = 8
 	}
-	left := m.renderBucket(m.state.Left, w, h, m.state.Focus == domain.Left)
-	right := m.renderBucket(m.state.Right, w, h, m.state.Focus == domain.Right)
+	left := m.renderBucket(m.state.Left, leftW, h, m.state.Focus == domain.Left)
+	right := m.renderBucket(m.state.Right, rightW, h, m.state.Focus == domain.Right)
 	return lipgloss.JoinHorizontal(lipgloss.Top, left, right)
 }
 
