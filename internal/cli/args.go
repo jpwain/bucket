@@ -14,7 +14,7 @@ type Args struct {
 
 func ParseArgs(argv []string) (Args, error) {
 	if len(argv) != 2 {
-		return Args{}, errors.New("usage: buckets <left-file> <right-file>")
+		return Args{}, errors.New("usage: bucket <left-file> <right-file>")
 	}
 	left, err := filepath.Abs(argv[0])
 	if err != nil {

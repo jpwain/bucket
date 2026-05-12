@@ -7,7 +7,7 @@
 Usage:
 
 ```bash
-go run ./cmd/buckets left.txt right.txt
+go run ./cmd/bucket left.txt right.txt
 ```
 
 Controls:

@@ -216,7 +216,7 @@ Interaction state includes focused side and both cursor positions.
 
 ### Suggested Packages
 
-- `cmd/buckets/main.go`: command entrypoint.
+- `cmd/bucket/main.go`: command entrypoint.
 - `internal/cli`: argument parsing and validation.
 - `internal/io`: file loading, newline handling, serialization helpers, atomic writes.
 - `internal/domain`: buckets, moves, cursor logic, dirty detection, undo/redo.

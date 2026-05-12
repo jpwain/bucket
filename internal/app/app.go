@@ -175,9 +175,9 @@ func (m model) View() string {
 		return "loading..."
 	}
 	top := m.renderStatus()
-	buckets := m.renderBuckets()
+	panels := m.renderPanels()
 	bottom := m.renderHints()
-	body := lipgloss.JoinVertical(lipgloss.Left, top, buckets, bottom)
+	body := lipgloss.JoinVertical(lipgloss.Left, top, panels, bottom)
 	if m.dialog != dialogNone {
 		body += "\n" + m.renderDialog()
 	}
@@ -199,7 +199,7 @@ func (m model) renderStatus() string {
 	return status
 }
 
-func (m model) renderBuckets() string {
+func (m model) renderPanels() string {
 	w := m.width / 2
 	if w < 20 {
 		w = 20
