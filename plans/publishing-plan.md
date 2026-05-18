@@ -16,7 +16,7 @@ Ship `bucket` as a single Go binary that is easy to build, release, and install 
 ## Human Actions
 
 1. Create a release versioning convention.
-   - Use semantic version tags such as `v1.1.0`.
+   - Use semantic version tags such as `vX.Y.Z`.
    - Treat the Git tag as the release identity and the only version source Homebrew should reference.
    - Decide whether prereleases should be published or skipped.
 
@@ -32,7 +32,7 @@ Ship `bucket` as a single Go binary that is easy to build, release, and install 
    - Create and push the tag from a clean working tree.
    - Let GitHub Actions build the release artifacts for the supported platforms.
    - Publish a GitHub Release for that tag.
-   - Update the Homebrew formula with the new version and checksum in the tap repo.
+   - Update `Formula/bucket.rb` with the new version and checksum.
    - The release workflow lives at `.github/workflows/release.yml`.
    - Release asset names should follow `bucket_<version>_<goos>_<goarch>.tar.gz`.
 
@@ -64,7 +64,6 @@ Ship `bucket` as a single Go binary that is easy to build, release, and install 
    - Document where the tarball or zip is uploaded and how the URL is formed from the tag.
    - Keep the formula pinned to the release artifact checksum instead of building from source.
    - Keep the formula version in plain semver form, matching the release binary's `--version` output.
-   - Use the tap repo URL `https://github.com/jpwain/bucket.git`.
 
 5. Make checksum updates straightforward.
    - Document where the release `sha256` lives.
@@ -93,16 +92,6 @@ CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o bucket ./cmd/bucket
 This is the preferred release shape because it keeps the binary simple, portable, and easier to publish.
 
 For local debugging, use a plain `go build ./cmd/bucket` so symbols and file paths stay available.
-
-## Suggested Release Flow
-
-1. Update code.
-2. Run tests locally.
-3. Tag a version with `vX.Y.Z`.
-4. Push the tag to GitHub.
-5. Let the release workflow build the binaries, package them, and create the GitHub Release.
-6. Update the Homebrew formula with the new version, archive URL, and `sha256`.
-7. Test `brew install` from the tap and confirm `bucket --version`.
 
 ## Suggested Homebrew Formula Shape
 
