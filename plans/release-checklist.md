@@ -25,7 +25,7 @@ Use this when shipping a tagged release.
    shasum -a 256 bucket_X.Y.Z_darwin_amd64.tar.gz
    ```
 
-6. Update the Homebrew formula in the tap repo.
+6. Update the Homebrew formula.
    - Edit `Formula/bucket.rb` in this repo.
    - Replace the version with the new release version.
    - Replace the release URL with the new asset URL.
