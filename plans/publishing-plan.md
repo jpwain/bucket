@@ -16,7 +16,7 @@ Ship `bucket` as a single Go binary that is easy to build, release, and install 
 ## Human Actions
 
 1. Create a release versioning convention.
-   - Use semantic version tags such as `v0.1.0`.
+   - Use semantic version tags such as `v1.1.0`.
    - Treat the Git tag as the release identity and the only version source Homebrew should reference.
    - Decide whether prereleases should be published or skipped.
 
