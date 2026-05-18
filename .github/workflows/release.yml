@@ -1,0 +1,111 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Run tests
+        run: go test ./...
+
+  build:
+    name: Build ${{ matrix.goos }}/${{ matrix.goarch }}
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - goos: darwin
+            goarch: amd64
+          - goos: darwin
+            goarch: arm64
+          - goos: linux
+            goarch: amd64
+          - goos: linux
+            goarch: arm64
+          - goos: windows
+            goarch: amd64
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Build release archive
+        env:
+          CGO_ENABLED: 0
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          VERSION: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+
+          version="${VERSION#v}"
+          out_dir="dist/${GOOS}-${GOARCH}"
+          binary="bucket"
+          ext=""
+
+          if [ "${GOOS}" = "windows" ]; then
+            ext=".exe"
+          fi
+
+          mkdir -p "${out_dir}"
+
+          go build -trimpath -ldflags="-s -w -X main.version=${version}" -o "${out_dir}/${binary}${ext}" ./cmd/bucket
+          tar -C "${out_dir}" -czf "${out_dir}/${binary}_${version}_${GOOS}_${GOARCH}.tar.gz" "${binary}${ext}"
+          sha256sum "${out_dir}/${binary}_${version}_${GOOS}_${GOARCH}.tar.gz" > "${out_dir}/${binary}_${version}_${GOOS}_${GOARCH}.tar.gz.sha256"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: dist/${{ matrix.goos }}-${{ matrix.goarch }}/*
+          if-no-files-found: error
+
+  publish:
+    name: Publish GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+
+      - name: Combine checksums
+        run: |
+          set -euo pipefail
+          find dist -name '*.sha256' -type f | sort | xargs cat > checksums.txt
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          generate_release_notes: true
+          files: |
+            dist/**/*.tar.gz
+            dist/**/*.tar.gz.sha256
+            checksums.txt
