@@ -21,7 +21,7 @@ Ship `bucket` as a single Go binary that is easy to build, release, and install 
    - Decide whether prereleases should be published or skipped.
 
 2. Choose the Homebrew distribution strategy.
-   - Keep the formula in the `jpwain/bucket` tap repo and add it with the explicit GitHub URL.
+   - Keep the formula in the repo root `Formula/bucket.rb` so the repository can be tapped directly with the explicit GitHub URL.
    - The formula should install a prebuilt release tarball or zip, not build from source.
 
 3. Prepare release notes.
@@ -58,7 +58,7 @@ Ship `bucket` as a single Go binary that is easy to build, release, and install 
    - Default the version to `dev` so local builds behave sensibly before release injection is wired in.
 
 4. Prepare Homebrew formula support.
-   - Add a formula template or documentation for `bucket` at `homebrew/Formula/bucket.rb` in this repo, then copy it into the tap repo.
+   - Keep a formula template or documentation for `bucket` at `homebrew/Formula/bucket.rb` in this repo, and keep the installable tap formula at `Formula/bucket.rb`.
    - Keep the formula small and standard.
    - Prefer the formula to install a prebuilt release artifact.
    - Document where the tarball or zip is uploaded and how the URL is formed from the tag.
