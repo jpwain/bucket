@@ -5,7 +5,7 @@
 class Bucket < Formula
   desc "Terminal tool for reviewing two text files side by side"
   homepage "https://github.com/jpwain/bucket"
-  version "0.1.0"
+  version "1.1.0"
 
   on_macos do
     if Hardware::CPU.arm?
