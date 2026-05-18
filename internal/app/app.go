@@ -238,7 +238,7 @@ func (m model) renderBucket(b domain.Bucket, width, height int, focused bool) st
 		rowStyle = lipgloss.NewStyle().Foreground(colors.Normal)
 	}
 	selectedStyle := lipgloss.NewStyle().
-		Background(colors.GrayDark).
+		Background(colors.GrayMid).
 		Foreground(colors.NormalDim)
 	if focused {
 		selectedStyle = lipgloss.NewStyle().

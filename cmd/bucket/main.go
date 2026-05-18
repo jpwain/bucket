@@ -9,11 +9,18 @@ import (
 	fileio "bucket/internal/io"
 )
 
+var version = "dev"
+
 func main() {
 	args, err := cli.ParseArgs(os.Args[1:])
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
+	}
+
+	if args.VersionRequested {
+		fmt.Println(version)
+		return
 	}
 
 	left, err := fileio.LoadBucket(args.LeftPath)

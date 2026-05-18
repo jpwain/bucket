@@ -1,0 +1,89 @@
+/* Bucket color usage reference
+ *
+ * This is a semantic stylesheet, not executable CSS.
+ * It documents how the terminal UI maps UI regions to lipgloss color tokens.
+ */
+
+:root {
+  /* Base palette */
+  --bucket-fg-normal: colors.Normal;
+  --bucket-fg-normal-dim: colors.NormalDim;
+  --bucket-fg-gray: colors.Gray;
+  --bucket-fg-gray-mid: colors.GrayMid;
+  --bucket-fg-gray-bright: colors.GrayBright;
+  --bucket-fg-gray-bright-dim: colors.GrayBrightDim;
+  --bucket-fg-green: colors.Green;
+  --bucket-fg-red: colors.Red;
+  --bucket-fg-white-bright: colors.WhiteBright;
+  --bucket-fg-indigo-subtle: colors.IndigoSubtle;
+  --bucket-bg-gray-dark: colors.GrayDark;
+}
+
+/* Top status line */
+.status .file-name {
+  color: var(--bucket-fg-normal);
+}
+
+.status .delta {
+  color: var(--bucket-fg-gray-mid);
+}
+
+.status .delta.is-positive {
+  color: var(--bucket-fg-green);
+}
+
+.status .delta.is-negative {
+  color: var(--bucket-fg-red);
+}
+
+.status .separator,
+.status .command {
+  color: var(--bucket-fg-gray);
+}
+
+/* Bucket panels */
+.panel {
+  border-color: var(--bucket-fg-gray-bright-dim);
+}
+
+.panel.is-focused {
+  font-weight: bold;
+  border-color: var(--bucket-fg-gray-bright);
+}
+
+.panel .line-number {
+  color: var(--bucket-fg-gray-mid);
+}
+
+.panel .row {
+  color: var(--bucket-fg-normal-dim);
+}
+
+.panel.is-focused .row {
+  color: var(--bucket-fg-normal);
+}
+
+.panel .row.is-selected {
+  background: var(--bucket-fg-gray-mid);
+  color: var(--bucket-fg-normal-dim);
+}
+
+.panel.is-focused .row.is-selected {
+  background: var(--bucket-fg-indigo-subtle);
+  color: var(--bucket-fg-white-bright);
+}
+
+/* Hint bar */
+.hints .key {
+  color: var(--bucket-fg-normal);
+}
+
+.hints .description,
+.hints .separator {
+  color: var(--bucket-fg-gray);
+}
+
+/* Derived behavior from the renderer:
+ * - Empty buckets render plain text "[empty]" with no special color.
+ * - Dialog text uses the default terminal foreground.
+ */

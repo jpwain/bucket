@@ -20,3 +20,24 @@ func TestParseArgsRejectsSameFileByInode(t *testing.T) {
 		t.Fatal("expected same-file rejection")
 	}
 }
+
+func TestParseArgsVersionFlag(t *testing.T) {
+	tests := []struct {
+		name string
+		args []string
+	}{
+		{"--version", []string{"--version"}},
+		{"-v", []string{"-v"}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := ParseArgs(tt.args)
+			if err != nil {
+				t.Fatalf("ParseArgs() error = %v", err)
+			}
+			if !got.VersionRequested {
+				t.Error("expected VersionRequested to be true")
+			}
+		})
+	}
+}

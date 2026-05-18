@@ -2,25 +2,44 @@ package cli
 
 import (
 	"errors"
+	"flag"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 )
 
 type Args struct {
-	LeftPath  string
-	RightPath string
+	LeftPath         string
+	RightPath        string
+	VersionRequested bool
 }
 
 func ParseArgs(argv []string) (Args, error) {
-	if len(argv) != 2 {
+	fs := flag.NewFlagSet("bucket", flag.ContinueOnError)
+	fs.SetOutput(io.Discard)
+
+	version := fs.Bool("version", false, "print version")
+	vShort := fs.Bool("v", false, "print version")
+
+	if err := fs.Parse(argv); err != nil {
+		return Args{}, errors.New("usage: bucket [-v|--version] <left-file> <right-file>")
+	}
+
+	if *version || *vShort {
+		return Args{VersionRequested: true}, nil
+	}
+
+	positional := fs.Args()
+	if len(positional) != 2 {
 		return Args{}, errors.New("usage: bucket <left-file> <right-file>")
 	}
-	left, err := filepath.Abs(argv[0])
+
+	left, err := filepath.Abs(positional[0])
 	if err != nil {
 		return Args{}, fmt.Errorf("resolve left path: %w", err)
 	}
-	right, err := filepath.Abs(argv[1])
+	right, err := filepath.Abs(positional[1])
 	if err != nil {
 		return Args{}, fmt.Errorf("resolve right path: %w", err)
 	}
