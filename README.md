@@ -33,4 +33,4 @@ Controls:
 
 The app keeps edits in memory until you save. It preserves newline style and trailing newline behavior when writing files back to disk.
 
-Releases are tagged from `main` and published through GitHub Actions. The Homebrew formula lives at `Formula/bucket.rb` in this repository.
+Releases are published from tagged commits on `main`, and the Homebrew formula lives at `Formula/bucket.rb` in this repository.
