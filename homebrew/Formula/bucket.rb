@@ -10,10 +10,10 @@ class Bucket < Formula
   on_macos do
     if Hardware::CPU.arm?
       url "https://github.com/jpwain/bucket/releases/download/v#{version}/bucket_#{version}_darwin_arm64.tar.gz"
-      sha256 "REPLACE_WITH_SHA256_FOR_DARWIN_ARM64"
+      sha256 "89af4d96ace8efa384034aaf4fe072a67f3b5ac568aa9baefd34d608326e9c86"
     else
       url "https://github.com/jpwain/bucket/releases/download/v#{version}/bucket_#{version}_darwin_amd64.tar.gz"
-      sha256 "REPLACE_WITH_SHA256_FOR_DARWIN_AMD64"
+      sha256 "e8ae44ff3ca073aeee060bfb19cb6717d1cadb91ad9f85d518e35af390d3de48"
     end
   end
 
