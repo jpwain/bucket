@@ -58,7 +58,7 @@ Ship `bucket` as a single Go binary that is easy to build, release, and install 
    - Default the version to `dev` so local builds behave sensibly before release injection is wired in.
 
 4. Prepare Homebrew formula support.
-   - Keep a formula template or documentation for `bucket` at `homebrew/Formula/bucket.rb` in this repo, and keep the installable tap formula at `Formula/bucket.rb`.
+   - Keep the installable tap formula at `Formula/bucket.rb` in this repo.
    - Keep the formula small and standard.
    - Prefer the formula to install a prebuilt release artifact.
    - Document where the tarball or zip is uploaded and how the URL is formed from the tag.
