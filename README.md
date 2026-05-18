@@ -4,10 +4,17 @@
 
 ![Screenshot](./screenshot.png)
 
+Install:
+
+```bash
+brew tap jpwain/bucket https://github.com/jpwain/bucket.git
+brew install jpwain/bucket/bucket
+```
+
 Usage:
 
 ```bash
-go run ./cmd/bucket left.txt right.txt
+bucket left.txt right.txt
 ```
 
 Controls:
@@ -25,3 +32,5 @@ Controls:
 - `?` help
 
 The app keeps edits in memory until you save. It preserves newline style and trailing newline behavior when writing files back to disk.
+
+Releases are tagged from `main` and published through GitHub Actions. The Homebrew formula lives at `Formula/bucket.rb` in this repository.
