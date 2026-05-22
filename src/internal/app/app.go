@@ -47,10 +47,12 @@ func Run(left, right domain.Bucket) error {
 func (m model) Init() tea.Cmd { return nil }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	changed := false
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
 		m.height = msg.Height
+		changed = true
 	case tea.KeyMsg:
 		if msg.Type == tea.KeyCtrlC {
 			return m, tea.Quit
@@ -67,20 +69,28 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		case "up":
 			m.state.MoveCursor(m.state.Focus, -1)
+			changed = true
 		case "down":
 			m.state.MoveCursor(m.state.Focus, 1)
+			changed = true
 		case "shift+up":
 			m.state.MoveCursor(other(m.state.Focus), -1)
+			changed = true
 		case "shift+down":
 			m.state.MoveCursor(other(m.state.Focus), 1)
+			changed = true
 		case "left":
 			m.move(domain.Right, domain.Left, false)
+			changed = true
 		case "right":
 			m.move(domain.Left, domain.Right, false)
+			changed = true
 		case "shift+left":
 			m.move(domain.Right, domain.Left, true)
+			changed = true
 		case "shift+right":
 			m.move(domain.Left, domain.Right, true)
+			changed = true
 		case "z":
 			if !m.state.UndoMove() {
 				m.status = "nothing to undo"
@@ -89,6 +99,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.status = "undo"
 				m.statusOk = true
 			}
+			changed = true
 		case "Z":
 			if !m.state.RedoMove() {
 				m.status = "nothing to redo"
@@ -97,6 +108,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.status = "redo"
 				m.statusOk = true
 			}
+			changed = true
 		case "w":
 			m.state.Wrap = !m.state.Wrap
 		case "s":
@@ -106,6 +118,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "?":
 			m.dialog = dialogHelp
 		}
+	}
+	if changed {
+		m.syncScrolls()
 	}
 	return m, nil
 }
@@ -210,7 +225,7 @@ func (m model) renderPanels() string {
 	if rightW < 1 {
 		rightW = 1
 	}
-	h := m.height - 4
+	h := m.height - 2
 	if h < 8 {
 		h = 8
 	}
@@ -224,7 +239,7 @@ func (m model) renderBucket(b domain.Bucket, width, height int, focused bool) st
 	s := lipgloss.NewStyle().
 		Border(border).
 		Width(width).
-		Height(height).
+		Height(height-2).
 		Padding(0, 1)
 	if focused {
 		s = s.Bold(true).BorderForeground(colors.GrayBright)
@@ -245,31 +260,122 @@ func (m model) renderBucket(b domain.Bucket, width, height int, focused bool) st
 			Background(colors.IndigoSubtle).
 			Foreground(colors.WhiteBright)
 	}
+	contentHeight := height - 2
+	if contentHeight < 1 {
+		contentHeight = 1
+	}
 	if len(b.Lines) == 0 {
 		lines = append(lines, "  [empty]")
 	}
-	for i, line := range b.Lines {
+	renderedRows := len(lines)
+	start := b.Scroll
+	if start < 0 {
+		start = 0
+	}
+	if start > len(b.Lines) {
+		start = len(b.Lines)
+	}
+	end := start + contentHeight
+	if end > len(b.Lines) {
+		end = len(b.Lines)
+	}
+	for i := start; i < end; i++ {
+		line := b.Lines[i]
 		prefix := "  " + fmt.Sprintf("%4d ", i+1)
 		if i == b.Cursor {
 			prefix = "> " + fmt.Sprintf("%4d ", i+1)
 		}
-		plainLine := line
-		if !m.state.Wrap {
-			maxText := width - 2 - len(prefix)
-			if maxText < 0 {
-				maxText = 0
-			}
-			if len(plainLine) > maxText {
-				plainLine = plainLine[:maxText]
-			}
+		maxText := width - 2 - len(prefix)
+		if maxText < 1 {
+			maxText = 1
 		}
-		row := lineNoStyle.Render(prefix) + rowStyle.Render(plainLine)
-		if i == b.Cursor {
-			row = selectedStyle.Render(prefix + plainLine)
+		segments := []string{line}
+		if m.state.Wrap {
+			segments = wrapText(line, maxText)
+		} else if len(line) > maxText {
+			segments[0] = line[:maxText]
 		}
-		lines = append(lines, row)
+		for j, segment := range segments {
+			if renderedRows >= contentHeight {
+				break
+			}
+			rowPrefix := strings.Repeat(" ", len(prefix))
+			if j == 0 {
+				rowPrefix = prefix
+			}
+			row := lineNoStyle.Render(rowPrefix) + rowStyle.Render(segment)
+			if i == b.Cursor {
+				row = selectedStyle.Render(rowPrefix + segment)
+			}
+			lines = append(lines, row)
+			renderedRows++
+		}
 	}
 	return s.Render(strings.Join(lines, "\n"))
+}
+
+func wrapText(text string, width int) []string {
+	if width < 1 {
+		width = 1
+	}
+	if text == "" {
+		return []string{""}
+	}
+	runes := []rune(text)
+	parts := make([]string, 0, (len(runes)+width-1)/width)
+	for len(runes) > 0 {
+		used := width
+		if used > len(runes) {
+			used = len(runes)
+		}
+		parts = append(parts, string(runes[:used]))
+		runes = runes[used:]
+	}
+	return parts
+}
+
+func (m model) bucketViewportHeight() int {
+	h := m.height - 4
+	if h < 8 {
+		h = 8
+	}
+	contentHeight := h
+	if contentHeight < 1 {
+		contentHeight = 1
+	}
+	return contentHeight
+}
+
+func (m *model) syncScrolls() {
+	viewport := m.bucketViewportHeight()
+	syncBucketScroll(&m.state.Left, viewport)
+	syncBucketScroll(&m.state.Right, viewport)
+}
+
+func syncBucketScroll(b *domain.Bucket, viewport int) {
+	if viewport < 1 {
+		viewport = 1
+	}
+	if len(b.Lines) == 0 {
+		b.Scroll = 0
+		return
+	}
+	maxScroll := len(b.Lines) - viewport
+	if maxScroll < 0 {
+		maxScroll = 0
+	}
+	if b.Scroll < 0 {
+		b.Scroll = 0
+	}
+	if b.Cursor < b.Scroll {
+		b.Scroll = b.Cursor
+	}
+	if b.Cursor >= b.Scroll+viewport {
+		b.Scroll = b.Cursor - viewport + 1
+	}
+	if b.Scroll > maxScroll {
+		b.Scroll = maxScroll
+	}
 }
 
 func (m model) renderHints() string {
