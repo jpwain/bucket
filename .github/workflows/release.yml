@@ -19,11 +19,11 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version-file: go.mod
+          go-version-file: src/go.mod
           cache: true
 
       - name: Run tests
-        run: go test ./...
+        run: cd src && go test ./...
 
   build:
     name: Build ${{ matrix.goos }}/${{ matrix.goarch }}
@@ -51,7 +51,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version-file: go.mod
+          go-version-file: src/go.mod
           cache: true
 
       - name: Build release archive
@@ -62,6 +62,8 @@ jobs:
           VERSION: ${{ github.ref_name }}
         run: |
           set -euo pipefail
+
+          cd src
 
           version="${VERSION#v}"
           out_dir="dist/${GOOS}-${GOARCH}"
@@ -82,7 +84,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: release-${{ matrix.goos }}-${{ matrix.goarch }}
-          path: dist/${{ matrix.goos }}-${{ matrix.goarch }}/*
+          path: src/dist/${{ matrix.goos }}-${{ matrix.goarch }}/*
           if-no-files-found: error
 
   publish:

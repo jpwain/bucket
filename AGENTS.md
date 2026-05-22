@@ -24,15 +24,11 @@ Guidance for agentic development work in this repository.
 
 ## Project Layout
 
-- `cmd/bucket/main.go` is the CLI entrypoint.
+- `src/cmd/bucket/main.go` is the CLI entrypoint.
 - `plans/` is for internal planning and release guidance.
 - `Formula/bucket.rb` is the installable Homebrew formula for the repo tap.
 
 ## Verification
 
-- Run `go test ./...` before committing meaningful Go changes.
+- Run `cd src && go test ./...` before committing meaningful Go changes.
 - For release-related changes, verify the checklist steps still match the actual workflow.
-
-## Issue tracking and management, TODO lists, work queues
-
-This project uses a CLI ticket system for task management. Run `tk help` when you need to use it. See

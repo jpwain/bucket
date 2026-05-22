@@ -4,7 +4,7 @@ Use this when shipping a tagged release.
 
 1. Update the code and run tests.
    ```bash
-   go test ./...
+   cd src && go test ./...
    ```
 
 2. Bump the version in the release notes or changelog if you keep one.

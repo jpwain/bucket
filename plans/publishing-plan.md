@@ -6,7 +6,7 @@ Ship `bucket` as a single Go binary that is easy to build, release, and install 
 
 ## Core Decisions
 
-- Keep the app as a standard Go module with one executable at `cmd/bucket`.
+- Keep the app as a standard Go module with one executable at `src/cmd/bucket`.
 - Build a single release binary where practical, with CGO disabled if the app continues to work without it.
 - Publish tagged GitHub releases with prebuilt binaries and use those tags as the source of truth for Homebrew.
 - Keep the release pipeline in GitHub Actions rather than adding a separate release tool unless the manual steps become painful.
@@ -44,11 +44,11 @@ Ship `bucket` as a single Go binary that is easy to build, release, and install 
 ## Coding Agent Actions
 
 1. Keep the build entrypoint stable.
-   - Ensure `cmd/bucket/main.go` remains the single executable entrypoint.
+   - Ensure `src/cmd/bucket/main.go` remains the single executable entrypoint.
    - Keep package layout idiomatic and predictable.
 
 2. Add release-friendly build support.
-   - Make sure `go build ./cmd/bucket` succeeds cleanly.
+   - Make sure `cd src && go build ./cmd/bucket` succeeds cleanly.
    - Add a documented release build command that includes `CGO_ENABLED=0`, `-trimpath`, and `-ldflags="-s -w"` if the app continues to work without CGO.
    - Keep a separate non-stripped build path available for debugging.
 
@@ -86,12 +86,12 @@ Ship `bucket` as a single Go binary that is easy to build, release, and install 
 ## Suggested Build Shape
 
 ```bash
-CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o bucket ./cmd/bucket
+cd src && CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o bucket ./cmd/bucket
 ```
 
 This is the preferred release shape because it keeps the binary simple, portable, and easier to publish.
 
-For local debugging, use a plain `go build ./cmd/bucket` so symbols and file paths stay available.
+For local debugging, use `cd src && go build ./cmd/bucket` so symbols and file paths stay available.
 
 ## Suggested Homebrew Formula Shape
 

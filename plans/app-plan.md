@@ -216,11 +216,11 @@ Interaction state includes focused side and both cursor positions.
 
 ### Suggested Packages
 
-- `cmd/bucket/main.go`: command entrypoint.
-- `internal/cli`: argument parsing and validation.
-- `internal/io`: file loading, newline handling, serialization helpers, atomic writes.
-- `internal/domain`: buckets, moves, cursor logic, dirty detection, undo/redo.
-- `internal/app`: Bubble Tea model, update loop, rendering, dialogs, scrolling.
+- `src/cmd/bucket/main.go`: command entrypoint.
+- `src/internal/cli`: argument parsing and validation.
+- `src/internal/io`: file loading, newline handling, serialization helpers, atomic writes.
+- `src/internal/domain`: buckets, moves, cursor logic, dirty detection, undo/redo.
+- `src/internal/app`: Bubble Tea model, update loop, rendering, dialogs, scrolling.
 
 ### Library Choices
 
