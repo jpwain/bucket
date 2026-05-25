@@ -17,6 +17,16 @@ class Bucket < Formula
     end
   end
 
+  on_linux do
+    if Hardware::CPU.arm?
+      url "https://github.com/jpwain/bucket/releases/download/v#{version}/bucket_#{version}_linux_arm64.tar.gz"
+      sha256 "8beb026e8316145cdb72bb57e8431a16457c9930d3b60a2f4adfec8d2a396408"
+    else
+      url "https://github.com/jpwain/bucket/releases/download/v#{version}/bucket_#{version}_linux_amd64.tar.gz"
+      sha256 "ad515d8a02592990abcf96e301b040cd2354b4ebe091a0f38f80334affdaa1ff"
+    end
+  end
+
   def install
     bin.install "bucket"
   end
