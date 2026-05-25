@@ -1,39 +1,36 @@
 # Bucket Release Checklist
 
-Use this when shipping a tagged release.
+Use this when shipping the latest tagged release or when refreshing the tap formula against the latest published release.
 
 1. Update the code and run tests.
    ```bash
    cd src && go test ./...
    ```
 
-2. Bump the version in the release notes or changelog if you keep one.
-
-3. Create the release tag from a clean working tree.
+2. For a new release, create the next release tag from a clean working tree.
    ```bash
    git tag vX.Y.Z
    git push origin vX.Y.Z
    ```
 
-4. Wait for the GitHub Actions release workflow to finish.
+3. Wait for the GitHub Actions release workflow to finish.
    - Workflow: `.github/workflows/release.yml`
    - Expected assets: `bucket_X.Y.Z_<goos>_<goarch>.tar.gz`
 
-5. Download the macOS release asset you need for the tap update.
+4. For the release tag you are targeting, fetch the asset digests from GitHub Release metadata.
    ```bash
-   gh release download vX.Y.Z --repo jpwain/bucket --pattern 'bucket_X.Y.Z_darwin_amd64.tar.gz'
-   shasum -a 256 bucket_X.Y.Z_darwin_amd64.tar.gz
+   gh release view vX.Y.Z --repo jpwain/bucket --json assets --jq '.assets[] | {name: .name, digest: .digest}'
    ```
 
-6. Update the Homebrew formula.
+5. Update the Homebrew formula.
    - Edit `Formula/bucket.rb` in this repo.
-   - Replace the version with the new release version.
-   - Replace the release URL with the new asset URL.
-   - Replace the `sha256` value with the checksum from the downloaded tarball.
+   - Keep the version pinned to the release tag being referenced.
+   - Set the release URL for each supported OS and architecture.
+   - Replace the `sha256` values with the published release digests for each tarball.
 
-7. Commit and push the formula update.
+6. Commit and push the formula update.
 
-8. Verify the published install path.
+7. Verify the published install path.
    ```bash
    brew tap jpwain/bucket https://github.com/jpwain/bucket.git
    brew update
@@ -41,9 +38,9 @@ Use this when shipping a tagged release.
    bucket --version
    ```
 
-9. Run a real usage check with the sample files you trust.
+8. Run a real usage check with the sample files you trust.
    ```bash
    bucket left.txt right.txt
    ```
 
-10. If the version output or binary behavior looks wrong, fix the tap formula or release artifact before announcing the release.
+9. If the version output or binary behavior looks wrong, fix the tap formula or release artifact before announcing the release.
